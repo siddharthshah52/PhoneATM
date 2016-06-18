@@ -74,5 +74,35 @@ public class APIUtils {
         x.start();
 
     }
+
+    public void getUserAcceptedPayment() {
+        Thread x = new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                Retrofit restAdapter = new Retrofit.Builder().baseUrl(RestAdapter.API).
+                        addConverterFactory(GsonConverterFactory.create()).build();
+                PaymentAPI paymentAPI = restAdapter.create(PaymentAPI.class);
+                Call<List<UserAcceptedPayment>> paymentsCall = paymentAPI.getUserAcceptedPayment(getHeaderAuthorizationToken());
+                paymentsCall.enqueue(new Callback<List<UserAcceptedPayment>>() {
+                    @Override
+                    public void onResponse(Response<List<UserAcceptedPayment>> response, Retrofit retrofit) {
+                        Log.i("+==================+", response.message());
+                        List<UserAcceptedPayment> result = response.body();
+                        for (UserAcceptedPayment pr : result) {
+                            Log.i("payment info", pr.getAmount() + "");
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Throwable t) {
+
+                    }
+                });
+            }
+        });
+        x.start();
+
+    }
 }
 
