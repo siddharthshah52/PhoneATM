@@ -34,3 +34,5 @@ dependencies {
 //    compile 'org.jbundle.util.osgi.wrapped:org.jbundle.util.osgi.wrapped.org.apache.http.client:4.1.2'
     compile files('libs/commons-lang3-3.4.jar')
 }
+
+apply plugin: 'com.google.gms.google-services'
