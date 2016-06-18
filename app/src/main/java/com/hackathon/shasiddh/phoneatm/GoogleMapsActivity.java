@@ -8,6 +8,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -19,12 +20,14 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class GoogleMapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
@@ -37,6 +40,8 @@ public class GoogleMapsActivity extends FragmentActivity implements OnMapReadyCa
     private String mLastUpdateTime;
     private LatLng latLng;
     private Marker mCurrentLocationMarker;
+    private ArrayList<Marker> mMarkers = new ArrayList<>();
+    private static final String TAG = "GoogleMapsActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -144,6 +149,35 @@ public class GoogleMapsActivity extends FragmentActivity implements OnMapReadyCa
         //LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
     }
 
+    private void addMarkersToMap() {
+        mMap.clear();
+        for (int i = 0; i < Cars.size(); i++) {
+            LatLng ll = new LatLng(Cars.get(i).getPos().getLat(), Cars.get(i).getPos().getLon());
+            BitmapDescriptor bitmapMarker;
+            switch (Cars.get(i).getState()) {
+                case 0:
+                    bitmapMarker = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED);
+                    Log.i(TAG, "RED");
+                    break;
+                case 1:
+                    bitmapMarker = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN);
+                    Log.i(TAG, "GREEN");
+                    break;
+                case 2:
+                    bitmapMarker = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE);
+                    Log.i(TAG, "ORANGE");
+                    break;
+                default:
+                    bitmapMarker = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED);
+                    Log.i(TAG, "DEFAULT");
+                    break;
+            }
+            mMarkers.add(mMap.addMarker(new MarkerOptions().position(ll).title(Cars.get(i).getName())
+                    .snippet(getStateString(Cars.get(i).getState())).icon(bitmapMarker)));
+
+            Log.i(TAG,"Car number "+i+"  was added " +mMarkers.get(mMarkers.size()-1).getId());
+        }
+    }
     @Override
     protected void onPause() {
         super.onPause();
