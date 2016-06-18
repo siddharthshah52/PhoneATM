@@ -39,11 +39,13 @@ public class MainActivity extends AppCompatActivity
 
         APIUtils apiUtils = new APIUtils(this);
         apiUtils.viewPayments();
+
         EditText editText = (EditText) findViewById(R.id.amount);
         editText.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if (keyCode == event.KEYCODE_ENTER) {
+
                     Intent intent = new Intent(getApplicationContext(), GoogleMapsActivity.class);
                     startActivity(intent);
                 }

@@ -30,7 +30,7 @@ public class APIUtils {
                 .getDefaultSharedPreferences(activity.getApplicationContext());
 
         String auth_token = settings.getString("auth_token", null);
-        return auth_token;
+        return "fde0e7b64e03df6a621954faa63eeed457101c1c";
     }
 
     public String getHeaderAuthorizationToken() {
