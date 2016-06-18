@@ -5,5 +5,6 @@ package com.hackathon.phoneatm.api;
  */
 public class RestAdapter {
     public static String API = "http://cashsharing.herokuapp.com";
+//    public static String API = "http://172.22.9.49:8000";
 
 }

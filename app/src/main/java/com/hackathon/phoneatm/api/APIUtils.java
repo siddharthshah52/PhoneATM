@@ -6,6 +6,8 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.hackathon.shasiddh.phoneatm.MyFirebaseInstanceIDService;
+
 import java.util.List;
 
 import retrofit.Call;
@@ -25,11 +27,12 @@ public class APIUtils {
         this.activity = activity;
     }
 
-    public String getAuthorizationToken() {
-        SharedPreferences settings = PreferenceManager
-                .getDefaultSharedPreferences(activity.getApplicationContext());
-
-        String auth_token = settings.getString("auth_token", null);
+    public static String getAuthorizationToken() {
+//        SharedPreferences settings = PreferenceManager
+//                .getDefaultSharedPreferences(activity.getApplicationContext());
+//
+//        String auth_token = settings.getString("auth_token", null);
+//        return "8492d3328889a1f061a287d7d27d183d35858338";
         return "fde0e7b64e03df6a621954faa63eeed457101c1c";
     }
 
@@ -103,6 +106,31 @@ public class APIUtils {
         });
         x.start();
 
+    }
+
+    public void addPaymentRequest(final String amount, final double lat, final double lon, final String token) {
+        Thread x = new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                Retrofit restAdapter = new Retrofit.Builder().baseUrl(RestAdapter.API).
+                        addConverterFactory(GsonConverterFactory.create()).build();
+                PaymentAPI paymentAPI = restAdapter.create(PaymentAPI.class);
+                paymentAPI.addExpenses(getHeaderAuthorizationToken()
+                        , amount, lat, lon, token).
+                        enqueue(new Callback<Integer>() {
+                            @Override
+                            public void onResponse(Response<Integer> response, Retrofit retrofit) {
+                            }
+
+                            @Override
+                            public void onFailure(Throwable t) {
+
+                            }
+                        });
+            }
+        });
+        x.start();
     }
 }
 

@@ -1,9 +1,15 @@
 package com.hackathon.shasiddh.phoneatm;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -37,19 +43,20 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
-        APIUtils apiUtils = new APIUtils(this);
-        Log.i("debug","debug");
-        apiUtils.viewPayments();
-
-        EditText editText = (EditText) findViewById(R.id.amount);
+        SharedPreferences settings = PreferenceManager
+                .getDefaultSharedPreferences(getApplicationContext());
+        final String token = settings.getString("token", null);
+        final APIUtils apiUtils = new APIUtils(this);
+        final EditText editText = (EditText) findViewById(R.id.amount);
         editText.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if (keyCode == event.KEYCODE_ENTER) {
-
                     Intent intent = new Intent(getApplicationContext(), GoogleMapsActivity.class);
                     startActivity(intent);
+                    String textValue = editText.getText() != null ? editText.getText().toString() : "";
+                    apiUtils.addPaymentRequest(textValue, 47.3, -122.3, token);
+
                 }
                 return false;
             }
