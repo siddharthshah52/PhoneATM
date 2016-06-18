@@ -15,6 +15,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
 
+import com.hackathon.phoneatm.api.APIUtils;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -34,6 +36,8 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        APIUtils apiUtils = new APIUtils(this);
+        apiUtils.viewPayments();
         EditText editText = (EditText) findViewById(R.id.amount);
         editText.setOnKeyListener(new View.OnKeyListener() {
             @Override
