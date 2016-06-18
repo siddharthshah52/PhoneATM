@@ -38,10 +38,6 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        APIUtils apiUtils = new APIUtils(this);
-        Log.i("debug","debug");
-        apiUtils.viewPayments();
-
         EditText editText = (EditText) findViewById(R.id.amount);
         editText.setOnKeyListener(new View.OnKeyListener() {
             @Override

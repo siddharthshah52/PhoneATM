@@ -25,15 +25,15 @@ public class APIUtils {
         this.activity = activity;
     }
 
-    public String getAuthorizationToken() {
-        SharedPreferences settings = PreferenceManager
-                .getDefaultSharedPreferences(activity.getApplicationContext());
+    public static String getAuthorizationToken() {
+//        SharedPreferences settings = PreferenceManager
+//                .getDefaultSharedPreferences(activity.getApplicationContext());
 
-        String auth_token = settings.getString("auth_token", null);
+//        String auth_token = settings.getString("auth_token", null);
         return "fde0e7b64e03df6a621954faa63eeed457101c1c";
     }
 
-    public String getHeaderAuthorizationToken() {
+    public static String getHeaderAuthorizationToken() {
         return " Token " + getAuthorizationToken();
     }
 

@@ -17,7 +17,7 @@ public interface PaymentAPI {
     @GET("/api/payments/")
     public Call<List<PaymentRequest>> getPaymentRequest(@Header("Authorization") String authorization);
 
-    @GET("/api/payments/")
+    @GET("/api/accepted_payments/")
     public Call<List<UserAcceptedPayment>> getUserAcceptedPayment(@Header("Authorization") String authorization);
 //
 //    @FormUrlEncoded

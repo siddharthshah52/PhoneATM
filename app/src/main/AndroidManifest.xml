@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-        package="com.hackathon.shasiddh.phoneatm">
+    package="com.hackathon.shasiddh.phoneatm">
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -38,20 +38,27 @@
 
         <activity
             android:name=".GoogleMapsActivity"
-            android:label="@string/title_activity_google_maps"></activity>
-        <service
-            android:name=".MyFirebaseMessagingService">
+            android:label="@string/title_activity_google_maps" />
+
+        <service android:name=".MyFirebaseMessagingService">
             <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+        <service android:name=".MyFirebaseInstanceIDService">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
 
-        <service
-            android:name=".MyFirebaseInstanceIDService">
+        <activity android:name=".PaymentRequestDisplayActivity"
+            android:screenOrientation="sensor"
+            android:windowSoftInputMode="stateHidden">
             <intent-filter>
-                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+                <action android:name="PaymentRequestDisplayActivity" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
-        </service>
+        </activity>
     </application>
 
 </manifest>

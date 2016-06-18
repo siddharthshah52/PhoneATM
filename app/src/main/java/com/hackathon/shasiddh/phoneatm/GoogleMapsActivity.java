@@ -25,10 +25,21 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.hackathon.phoneatm.api.APIUtils;
+import com.hackathon.phoneatm.api.PaymentAPI;
+import com.hackathon.phoneatm.api.RestAdapter;
+import com.hackathon.phoneatm.api.UserAcceptedPayment;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+
+import retrofit.Call;
+import retrofit.Callback;
+import retrofit.GsonConverterFactory;
+import retrofit.Response;
+import retrofit.Retrofit;
 
 public class GoogleMapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
@@ -42,6 +53,8 @@ public class GoogleMapsActivity extends FragmentActivity implements OnMapReadyCa
     private Marker mCurrentLocationMarker;
     private ArrayList<Marker> mMarkers = new ArrayList<>();
     private static final String TAG = "GoogleMapsActivity";
+    private float[] distances = new float[1];
+    private Location mLastLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,7 +105,7 @@ public class GoogleMapsActivity extends FragmentActivity implements OnMapReadyCa
             ActivityCompat.requestPermissions( this, new String[] {  android.Manifest.permission.ACCESS_FINE_LOCATION  },
                     MY_PERMISSION_ACCESS_FINE_LOCATION );
         }
-        Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
                 mGoogleApiClient);
         if (mLastLocation != null) {
             //place marker at current position
@@ -141,43 +154,15 @@ public class GoogleMapsActivity extends FragmentActivity implements OnMapReadyCa
         markerOptions.position(latLng);
         markerOptions.title("Current Position");
         markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
-        mCurrentLocationMarker = mMap.addMarker(markerOptions);
+//        mCurrentLocationMarker = mMap.addMarker(markerOptions);
 
         Toast.makeText(this,"Location Changed",Toast.LENGTH_SHORT).show();
 
         //If you only need one location, unregister the listener
         //LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+        getUserAcceptedPayment();
     }
 
-    private void addMarkersToMap() {
-        mMap.clear();
-        for (int i = 0; i < Cars.size(); i++) {
-            LatLng ll = new LatLng(Cars.get(i).getPos().getLat(), Cars.get(i).getPos().getLon());
-            BitmapDescriptor bitmapMarker;
-            switch (Cars.get(i).getState()) {
-                case 0:
-                    bitmapMarker = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED);
-                    Log.i(TAG, "RED");
-                    break;
-                case 1:
-                    bitmapMarker = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN);
-                    Log.i(TAG, "GREEN");
-                    break;
-                case 2:
-                    bitmapMarker = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE);
-                    Log.i(TAG, "ORANGE");
-                    break;
-                default:
-                    bitmapMarker = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED);
-                    Log.i(TAG, "DEFAULT");
-                    break;
-            }
-            mMarkers.add(mMap.addMarker(new MarkerOptions().position(ll).title(Cars.get(i).getName())
-                    .snippet(getStateString(Cars.get(i).getState())).icon(bitmapMarker)));
-
-            Log.i(TAG,"Car number "+i+"  was added " +mMarkers.get(mMarkers.size()-1).getId());
-        }
-    }
     @Override
     protected void onPause() {
         super.onPause();
@@ -187,5 +172,46 @@ public class GoogleMapsActivity extends FragmentActivity implements OnMapReadyCa
     protected void stopLocationUpdates() {
         LocationServices.FusedLocationApi.removeLocationUpdates(
                 mGoogleApiClient, this);
+    }
+
+    public void getUserAcceptedPayment() {
+        mMap.clear();
+        Thread x = new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                Retrofit restAdapter = new Retrofit.Builder().baseUrl(RestAdapter.API).
+                        addConverterFactory(GsonConverterFactory.create()).build();
+                PaymentAPI paymentAPI = restAdapter.create(PaymentAPI.class);
+                Call<List<UserAcceptedPayment>> paymentsCall = paymentAPI.getUserAcceptedPayment(APIUtils.getHeaderAuthorizationToken());
+                paymentsCall.enqueue(new Callback<List<UserAcceptedPayment>>() {
+                    @Override
+                    public void onResponse(Response<List<UserAcceptedPayment>> response, Retrofit retrofit) {
+                        Log.i("+==================+", response.message());
+                        List<UserAcceptedPayment> result = response.body();
+                        for (UserAcceptedPayment pr : result) {
+                            Log.i("payment info", pr.getAmount() + "");
+                            Log.i("location", String.format("Latitude %s, Longitude %s", pr.getLatitude(), pr.getLongitude()));
+                            LatLng ll = new LatLng(pr.getLatitude(), pr.getLongitude());
+                            BitmapDescriptor bitmapMarker = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN);
+                            getDistance(mLastLocation, pr);
+                            String distance = String.valueOf((float) Math.round(distances[0] * 0.000621371 * 100) / 100);
+                            mMarkers.add(mMap.addMarker(new MarkerOptions().position(ll).title(pr.getId().toString())
+                                    .snippet("Distance : " + distance + " miles").icon(bitmapMarker)));
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Throwable t) {
+
+                    }
+                });
+            }
+        });
+        x.start();
+    }
+
+    private void getDistance(Location mLastLocation, UserAcceptedPayment pr) {
+        Location.distanceBetween(mLastLocation.getLatitude(), mLastLocation.getLongitude(), pr.getLatitude(), pr.getLongitude(), distances);
     }
 }
