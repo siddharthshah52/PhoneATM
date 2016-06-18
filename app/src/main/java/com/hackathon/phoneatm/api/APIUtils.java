@@ -28,15 +28,10 @@ public class APIUtils {
     }
 
     public static String getAuthorizationToken() {
-//        SharedPreferences settings = PreferenceManager
-//                .getDefaultSharedPreferences(activity.getApplicationContext());
-//
-//        String auth_token = settings.getString("auth_token", null);
-//        return "8492d3328889a1f061a287d7d27d183d35858338";
         return "fde0e7b64e03df6a621954faa63eeed457101c1c";
     }
 
-    public String getHeaderAuthorizationToken() {
+    public static String getHeaderAuthorizationToken() {
         return " Token " + getAuthorizationToken();
     }
 
