@@ -39,8 +39,9 @@ public class APIUtils {
 
     public void viewPayments() {
 
+        Log.i("hello", "hello");
 //        final List<PaymentRequest> retVal;
-        new Thread(new Runnable() {
+        Thread x = new Thread(new Runnable() {
 
             @Override
             public void run() {
@@ -69,7 +70,9 @@ public class APIUtils {
                     }
                 });
             }
-        }).start();
+        });
+        x.start();
+
     }
 }
 
