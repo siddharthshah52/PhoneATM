@@ -156,7 +156,7 @@ public class GoogleMapsActivity extends FragmentActivity implements OnMapReadyCa
         markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
 //        mCurrentLocationMarker = mMap.addMarker(markerOptions);
 
-        Toast.makeText(this,"Location Changed",Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this,"Location Changed",Toast.LENGTH_SHORT).show();
 
         //If you only need one location, unregister the listener
         //LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
